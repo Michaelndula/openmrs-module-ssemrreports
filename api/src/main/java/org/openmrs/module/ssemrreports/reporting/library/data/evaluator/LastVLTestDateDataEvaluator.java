@@ -36,7 +36,7 @@ public class LastVLTestDateDataEvaluator implements PersonDataEvaluator {
 	        throws EvaluationException {
 		EvaluatedPersonData c = new EvaluatedPersonData(definition, context);
 		
-		String qry = "select client_id, DATE_FORMAT(mid(max(concat(encounter_datetime, date_vl_sample_collected, '' )),20), '%Y-%m-%d') as last_vl_collected "
+		String qry = "select client_id, DATE_FORMAT(mid(max(concat(encounter_datetime, date_vl_sample_collected, '' )),20), '%d-%m-%Y') as last_vl_collected "
 		        + " from ssemr_etl.ssemr_flat_encounter_hiv_care_follow_up where "
 		        + " DATE(encounter_datetime) <= DATE(:endDate) GROUP BY client_id";
 		

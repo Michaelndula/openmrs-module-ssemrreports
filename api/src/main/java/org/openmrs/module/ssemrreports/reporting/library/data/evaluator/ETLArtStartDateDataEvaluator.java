@@ -36,7 +36,7 @@ public class ETLArtStartDateDataEvaluator implements PersonDataEvaluator {
 	        throws EvaluationException {
 		EvaluatedPersonData c = new EvaluatedPersonData(definition, context);
 		
-		String qry = "SELECT client_id, DATE_FORMAT(MID(MAX(CONCAT(encounter_datetime, art_start_date)), 20), '%Y-%m-%d') AS max_art_start_date "
+		String qry = "SELECT client_id, DATE_FORMAT(MID(MAX(CONCAT(encounter_datetime, art_start_date)), 20), '%d-%m-%Y') AS max_art_start_date "
 		        + "FROM ssemr_etl.ssemr_flat_encounter_personal_family_tx_history where date(encounter_datetime) <= date(:endDate) GROUP BY client_id";
 		
 		SqlQueryBuilder queryBuilder = new SqlQueryBuilder();

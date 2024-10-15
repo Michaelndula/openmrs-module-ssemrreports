@@ -37,7 +37,7 @@ public class LastEAC1DateDataEvaluator implements PersonDataEvaluator {
 	        throws EvaluationException {
 		EvaluatedPersonData c = new EvaluatedPersonData(definition, context);
 		
-		String qry = "SELECT client_id, DATE_FORMAT(MID(MAX(CONCAT(encounter_datetime, adherence_date)), 20), '%Y-%m-%d') AS lastEac1Date "
+		String qry = "SELECT client_id, DATE_FORMAT(MID(MAX(CONCAT(encounter_datetime, adherence_date)), 20), '%d-%m-%Y'') AS lastEac1Date "
 		        + "FROM ssemr_etl.ssemr_flat_encounter_high_viral_load WHERE date(encounter_datetime) <= date(:endDate) GROUP BY client_id";
 		
 		SqlQueryBuilder queryBuilder = new SqlQueryBuilder();

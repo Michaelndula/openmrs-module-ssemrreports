@@ -36,7 +36,7 @@ public class DateStartedTbDataEvaluator implements PersonDataEvaluator {
 	        throws EvaluationException {
 		EvaluatedPersonData c = new EvaluatedPersonData(definition, context);
 		
-		String qry = "SELECT client_id, DATE_FORMAT(MID(MAX(CONCAT(encounter_datetime, date_started_tb)), 20), '%Y-%m-%d') as tb_sart_date FROM ssemr_etl.ssemr_flat_encounter_hiv_care_follow_up "
+		String qry = "SELECT client_id, DATE_FORMAT(MID(MAX(CONCAT(encounter_datetime, date_started_tb)), 20), '%d-%m-%Y') as tb_sart_date FROM ssemr_etl.ssemr_flat_encounter_hiv_care_follow_up "
 		        + " WHERE  date(encounter_datetime) <= date(:endDate) GROUP BY client_id HAVING tb_sart_date is not null;";
 		
 		SqlQueryBuilder queryBuilder = new SqlQueryBuilder();

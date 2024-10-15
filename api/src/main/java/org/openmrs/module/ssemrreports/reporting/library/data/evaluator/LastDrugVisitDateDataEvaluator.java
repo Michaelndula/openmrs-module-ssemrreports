@@ -36,7 +36,7 @@ public class LastDrugVisitDateDataEvaluator implements PersonDataEvaluator {
 	        throws EvaluationException {
 		EvaluatedPersonData c = new EvaluatedPersonData(definition, context);
 		
-		String qry = "SELECT t.client_id, t.last_encounter_datetime FROM ( SELECT client_id, DATE_FORMAT(MAX(encounter_datetime), '%Y-%m-%d') AS last_encounter_datetime, "
+		String qry = "SELECT t.client_id, t.last_encounter_datetime FROM ( SELECT client_id, DATE_FORMAT(MAX(encounter_datetime), '%d-%m-%Y') AS last_encounter_datetime, "
 		        + " MID(MAX(CONCAT(encounter_datetime, art_regimen_no_of_pills_dispensed)), 20) AS last_drugs_dispensed, MID(MAX(CONCAT(encounter_datetime, "
 		        + " art_regimen)), 20) AS last_art_regimen FROM ssemr_etl.ssemr_flat_encounter_hiv_care_follow_up WHERE DATE(encounter_datetime) <= date(:endDate) "
 		        + " GROUP BY client_id HAVING  last_drugs_dispensed IS NOT NULL AND last_art_regimen IS NOT NULL) AS t;";

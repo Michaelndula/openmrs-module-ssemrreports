@@ -36,7 +36,7 @@ public class TPTStartDateDataEvaluator implements PersonDataEvaluator {
 	        throws EvaluationException {
 		EvaluatedPersonData c = new EvaluatedPersonData(definition, context);
 		
-		String qry = "SELECT client_id, DATE_FORMAT(MAX(encounter_datetime), '%Y-%m-%d') AS max_encounter_datetime FROM ssemr_etl.ssemr_flat_encounter_hiv_care_follow_up "
+		String qry = "SELECT client_id, DATE_FORMAT(MAX(encounter_datetime), '%d-%m-%Y') AS max_encounter_datetime FROM ssemr_etl.ssemr_flat_encounter_hiv_care_follow_up "
 		        + " AS e WHERE e.inh = 'True' GROUP BY e.client_id HAVING TIMESTAMPDIFF(MONTH, MAX(e.encounter_datetime), CURDATE()) < 6 "
 		        + " AND MAX(e.encounter_datetime) <= :endDate;";
 		

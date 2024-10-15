@@ -36,7 +36,7 @@ public class VLDueDateDataEvaluator implements PersonDataEvaluator {
 	        throws EvaluationException {
 		EvaluatedPersonData c = new EvaluatedPersonData(definition, context);
 		
-		String qry = "select t.client_id, DATE_FORMAT(MAX(t.due_date), '%Y-%m-%d') AS max_due_date from (SELECT fp.client_id, mp.age, "
+		String qry = "select t.client_id, DATE_FORMAT(MAX(t.due_date), '%d-%m-%Y') AS max_due_date from (SELECT fp.client_id, mp.age, "
 		        + "fp.vl_results, fp.date_vl_sample_collected, fp.edd, fh.art_start_date, "
 		        + "vlr.patient_pregnant, fp.encounter_datetime, vlr.value, "
 		        + " CASE WHEN mp.age <= 19 THEN DATE_ADD(fp.date_vl_sample_collected, INTERVAL 6 MONTH) "
