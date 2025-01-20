@@ -43,7 +43,7 @@
         "id": "ssemr.tb.treatment.register",
         "extensionPointId": "org.openmrs.module.ssemr.reports.registers",
         "type": "link",
-        "label": "Line list of Clients On TB Treatment",
+        "label": "Line list of patients currently on TB Treatment",
         "url": "ssemrreports/runReport.page?reportDefinition=5d9bbc09-8c56-49c0-aa58-d9bb2a11277c",
         "order": 23,
         "requiredPrivilege": ""
@@ -88,7 +88,7 @@
         "id": "ssemr.patient.documented.vl.tests.register",
         "extensionPointId": "org.openmrs.module.ssemr.reports.registers",
         "type": "link",
-        "label": "Line list for clients with documented viral load result, high viral load, and viral load test",
+        "label": "Line Lists for clients with viral load samples collected, documented viral load results and pending viral load results",
         "url": "ssemrreports/runReport.page?reportDefinition=a22d33c6-8d45-11ee-b9d1-0242ac120002",
         "order": 28,
         "requiredPrivilege": ""

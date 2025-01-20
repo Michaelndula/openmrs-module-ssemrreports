@@ -42,12 +42,12 @@ public class SetupTbTreatmentRegister extends SsemrDataExportManager {
 	
 	@Override
 	public String getName() {
-		return "Line list of Clients On TB Treatment";
+		return "Line list of patients currently on TB Treatment";
 	}
 	
 	@Override
 	public String getDescription() {
-		return "Line list of Clients On TB Treatment";
+		return "Line list of patients currently on TB Treatment";
 	}
 	
 	@Override
@@ -74,7 +74,7 @@ public class SetupTbTreatmentRegister extends SsemrDataExportManager {
 		ReportDesign reportDesign = null;
 		try {
 			reportDesign = createXlsReportDesign(reportDefinition, "started_on_tb_register.xls",
-			    "Line list of Clients On TB Treatment", getExcelDesignUuid(), null);
+			    "Line list of patients currently on TB Treatment", getExcelDesignUuid(), null);
 			Properties props = new Properties();
 			props.put("repeatingSections", "sheet:1,row:4,dataset:STB");
 			props.put("sortWeight", "5000");
