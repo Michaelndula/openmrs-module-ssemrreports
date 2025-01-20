@@ -53,14 +53,16 @@ public class SetupAllClientsReport extends SsemrDataExportManager {
 	
 	@Override
 	public ReportDefinition constructReportDefinition() {
+		String mappings = "endDate=${endDate+23h}";
+		
 		ReportDefinition rd = new ReportDefinition();
 		rd.setUuid(getUuid());
 		rd.setName(getName());
 		rd.setDescription(getDescription());
 		rd.addParameters(allClientsDatasetDefinition.getParameters());
 		rd.addDataSetDefinition("ALL",
-		    Mapped.mapStraightThrough(allClientsDatasetDefinition.constructAllClientsDatasetDefinition()));
-		rd.setBaseCohortDefinition(SsemrReportUtils.map(baseCohortQueries.getAllClients(), "endDate=${endDate+23h}"));
+		    SsemrReportUtils.map(allClientsDatasetDefinition.constructAllClientsDatasetDefinition(), mappings));
+		rd.setBaseCohortDefinition(SsemrReportUtils.map(baseCohortQueries.getAllClients(), mappings));
 		return rd;
 	}
 	
