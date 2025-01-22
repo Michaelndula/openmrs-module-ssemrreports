@@ -76,7 +76,7 @@ public class SetupIITRegister extends SsemrDataExportManager {
 			reportDesign = createXlsReportDesign(reportDefinition, "iitRegister.xls", "Report for IIT clients",
 			    getExcelDesignUuid(), null);
 			Properties props = new Properties();
-			props.put("repeatingSections", "sheet:1,row:3,dataset:IIT");
+			props.put("repeatingSections", "sheet:1,row:4,dataset:IIT");
 			props.put("sortWeight", "5000");
 			reportDesign.setProperties(props);
 		}
