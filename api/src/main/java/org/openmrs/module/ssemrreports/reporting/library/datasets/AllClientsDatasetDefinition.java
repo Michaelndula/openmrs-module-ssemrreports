@@ -158,7 +158,7 @@ public class AllClientsDatasetDefinition extends SsemrBaseDataSet {
 		dsd.addColumn("id", new IndexDataDefinition(), "");
 		dsd.addColumn("Identifier", identifierDef, (String) null);
 		dsd.addColumn("Name", nameDef, "");
-		dsd.addColumn("Age", new AgeDataDefinition(), "", null);
+		dsd.addColumn("Age", new CustomAgeDataDefinition(), "", null);
 		dsd.addColumn("Gender", new GenderDataDefinition(), "", null);
 		dsd.addColumn("Weight", weightDataDefinition, "endDate=${endDate}");
 		dsd.addColumn("BMI", bmiDataDefinition, "endDate=${endDate}");

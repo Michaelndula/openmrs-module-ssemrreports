@@ -319,12 +319,12 @@ public class CommonQueries {
 	}
 	
 	public static String getIITPatients() {
-		String query = "SELECT t.patient_id FROM (SELECT p.patient_id, p.status, p.start_date_time, DATEDIFF(CURDATE(), p.start_date_time) AS date_diff "
+		String query = "SELECT t.patient_id FROM (SELECT p.patient_id, p.status, p.start_date_time, DATEDIFF(:endDate, p.start_date_time) AS date_diff "
 		        + "FROM openmrs.patient_appointment p JOIN (SELECT patient_id,  MAX(start_date_time) AS max_start_date_time "
 		        + "FROM openmrs.patient_appointment WHERE location_id =:location GROUP BY patient_id) AS latest_appt ON p.patient_id = latest_appt.patient_id "
 		        + "AND p.start_date_time = latest_appt.max_start_date_time LEFT JOIN ssemr_etl.ssemr_flat_encounter_hiv_care_follow_up e "
 		        + "ON e.client_id = p.patient_id WHERE p.status = 'Missed' AND DATE(e.encounter_datetime) <= DATE(:endDate) "
-		        + "AND DATEDIFF(CURDATE(), p.start_date_time) > 28 ORDER BY  p.patient_id ASC) AS t;";
+		        + "AND DATEDIFF(:endDate, p.start_date_time) > 28 ORDER BY  p.patient_id ASC) AS t;";
 		
 		return query;
 	}

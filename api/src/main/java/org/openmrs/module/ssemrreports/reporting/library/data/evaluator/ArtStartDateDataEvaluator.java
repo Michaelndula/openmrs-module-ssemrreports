@@ -37,7 +37,18 @@ public class ArtStartDateDataEvaluator implements PersonDataEvaluator {
 		EvaluatedPersonData c = new EvaluatedPersonData(definition, context);
 		
 		String qry = "SELECT client_id, DATE_FORMAT(MID(MAX(CONCAT(encounter_datetime, art_start_date)), 20), '%d-%m-%Y') AS max_art_start_date "
-		        + "FROM ssemr_etl.ssemr_flat_encounter_personal_family_tx_history where date(encounter_datetime) <= date(:endDate) GROUP BY client_id";
+		        + "FROM ( "
+		        + "    SELECT client_id, encounter_datetime, art_start_date "
+		        + "    FROM ssemr_etl.ssemr_flat_encounter_personal_family_tx_history "
+		        + "    WHERE date(encounter_datetime) <= date(:endDate) "
+		        + "    UNION ALL "
+		        + "    SELECT client_id, encounter_datetime, art_start_date "
+		        + "    FROM ssemr_etl.ssemr_flat_encounter_adult_and_adolescent_intake "
+		        + "    WHERE date(encounter_datetime) <= date(:endDate) "
+		        + "    UNION ALL "
+		        + "    SELECT client_id, encounter_datetime, art_start_date "
+		        + "    FROM ssemr_etl.ssemr_flat_encounter_pediatric_intake_report "
+		        + "    WHERE date(encounter_datetime) <= date(:endDate) " + ") combined_data " + "GROUP BY client_id";
 		
 		SqlQueryBuilder queryBuilder = new SqlQueryBuilder();
 		queryBuilder.append(qry);

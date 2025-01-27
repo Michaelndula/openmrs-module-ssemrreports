@@ -108,7 +108,7 @@ public class EligibleForTPTDatasetDefinition extends SsemrBaseDataSet {
 		    new PersonAttributeDataConverter());
 		dsd.addColumn("Alternative telephone", new PersonAttributeDataDefinition("Alternative Phone Number",
 		        alternativePhoneNumber), "", new PersonAttributeDataConverter());
-		dsd.addColumn("Age", new AgeDataDefinition(), "", null);
+		dsd.addColumn("Age", new CustomAgeDataDefinition(), "", null);
 		dsd.addColumn("Gender", new GenderDataDefinition(), "", null);
 		dsd.addColumn("Pregnant", pregnantDataDefinition, "endDate=${endDate}");
 		dsd.addColumn("Breastfeeding", breastfeedingDataDefinition, "endDate=${endDate}");

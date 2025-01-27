@@ -28,10 +28,11 @@ public class TBStatusDataEvaluator implements PersonDataEvaluator {
 		EvaluatedPersonData c = new EvaluatedPersonData(definition, context);
 		
 		String qry = "SELECT client_id, " + "CASE " + "  WHEN on_tb_treatment = 'Yes' THEN 'On TB Treatment' "
+		        + "  WHEN COALESCE(MID(MAX(CONCAT(encounter_datetime, tb_status)), 20), '') = '' THEN 'N/A' "
 		        + "  ELSE CASE MID(MAX(CONCAT(encounter_datetime, tb_status)), 20) "
 		        + "    WHEN 'No Signs' THEN 'No Signs' " + "    WHEN 'Pr TB - Presumptive TB' THEN 'Presumptive TB' "
-		        + "    WHEN 'ND - TB Screening not done' THEN 'Not done' " + "  END " + "END AS tb_status "
-		        + "FROM ssemr_etl.ssemr_flat_encounter_hiv_care_follow_up " + "GROUP BY client_id";
+		        + "    WHEN 'ND - TB Screening not done' THEN 'Not done' " + "    ELSE 'N/A' " + "  END "
+		        + "END AS tb_status " + "FROM ssemr_etl.ssemr_flat_encounter_hiv_care_follow_up " + "GROUP BY client_id";
 		
 		SqlQueryBuilder queryBuilder = new SqlQueryBuilder();
 		queryBuilder.append(qry);
