@@ -731,6 +731,7 @@ public class ArtDatasetDefinition extends SsemrBaseDataSet {
 	}
 	
 	public DataSetDefinition getViralLoadDataset() {
+		// VL smaples collecetd and results received during the previous reporting period(month)
 		CohortIndicatorDataSetDefinition dsd = new CohortIndicatorDataSetDefinition();
 		String mappings = "startDate=${startDate},endDate=${endDate},location=${location}";
 		dsd.setName("viralLoad");
@@ -740,7 +741,7 @@ public class ArtDatasetDefinition extends SsemrBaseDataSet {
 		dsd.addDimension("age", map(dimension.age(), "effectiveDate=${endDate}"));
 		addRow(
 		    dsd,
-		    "Collected",
+		    "CT",
 		    "Samples collected",
 		    map(indicator.getIndicator("Samples collected",
 		        map(artCohortQueries.getVLSampleCollectionCohortDefinition(), mappings)), mappings), allAgeDisaggregation,
@@ -748,14 +749,14 @@ public class ArtDatasetDefinition extends SsemrBaseDataSet {
 		        "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27"));
 		addRow(
 		    dsd,
-		    "Collected",
+		    "CP",
 		    "Samples collected - pregnant",
 		    map(indicator.getIndicator("Samples collected - pregnant",
 		        map(artCohortQueries.getVLSampleCollectionForPregnantCohortDefinition(), mappings)), mappings),
 		    pbfAgeOnlyDisaggregation, Arrays.asList("28", "29", "30", "31", "32", "33", "34", "35", "36", "37"));
 		addRow(
 		    dsd,
-		    "Collected",
+		    "CB",
 		    "Samples collected - breastfeeding",
 		    map(indicator.getIndicator("Samples collected - breastfeeding",
 		        map(artCohortQueries.getVLSampleCollectionForBreastfeedingCohortDefinition(), mappings)), mappings),
@@ -763,48 +764,47 @@ public class ArtDatasetDefinition extends SsemrBaseDataSet {
 		
 		addRow(
 		    dsd,
-		    "Result < 1000",
+		    "R<1000T",
 		    "Results received",
-		    map(indicator.getIndicator("Results received",
-		        map(artCohortQueries.getVLResultsCohortDefinition(0, 999), mappings)), mappings), allAgeDisaggregation,
-		    Arrays.asList("01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16",
-		        "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27"));
+		    map(indicator.getIndicator("Results received", map(artCohortQueries.getVLResultsCohortDefinition(), mappings)),
+		        mappings), allAgeDisaggregation, Arrays.asList("01", "02", "03", "04", "05", "06", "07", "08", "09", "10",
+		        "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27"));
 		addRow(
 		    dsd,
-		    "Result < 1000",
+		    "R<1000P",
 		    "Results received - pregnant",
 		    map(indicator.getIndicator("Results received - pregnant",
-		        map(artCohortQueries.getVLResultsForPregnantCohortDefinition(0, 999), mappings)), mappings),
+		        map(artCohortQueries.getVLResultsForPregnantCohortDefinition(), mappings)), mappings),
 		    pbfAgeOnlyDisaggregation, Arrays.asList("28", "29", "30", "31", "32", "33", "34", "35", "36", "37"));
 		addRow(
 		    dsd,
-		    "Result < 1000",
+		    "R<1000B",
 		    "Results received - breastfeeding",
 		    map(indicator.getIndicator("Results received - breastfeeding",
-		        map(artCohortQueries.getVLResultsForBreastfeedingCohortDefinition(0, 999), mappings)), mappings),
+		        map(artCohortQueries.getVLResultsForBreastfeedingCohortDefinition(), mappings)), mappings),
 		    pbfAgeOnlyDisaggregation, Arrays.asList("38", "39", "40", "41", "42", "43", "44", "45", "46", "47"));
 		
 		addRow(
 		    dsd,
-		    "Result >= 1000",
-		    "Results received",
-		    map(indicator.getIndicator("Results received",
-		        map(artCohortQueries.getVLResultsCohortDefinition(1000, 1000000000), mappings)), mappings),
-		    allAgeDisaggregation, Arrays.asList("01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12",
-		        "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27"));
+		    "R>=1000T",
+		    "Results received All",
+		    map(indicator.getIndicator("Results received All",
+		        map(artCohortQueries.getVLRetentionResultsCohortDefinition(), mappings)), mappings), allAgeDisaggregation,
+		    Arrays.asList("01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16",
+		        "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27"));
 		addRow(
 		    dsd,
-		    "Result >= 1000",
+		    "R>=1000P",
 		    "Results received - pregnant",
 		    map(indicator.getIndicator("Results received - pregnant",
-		        map(artCohortQueries.getVLResultsForPregnantCohortDefinition(0, 1000000000), mappings)), mappings),
+		        map(artCohortQueries.getRetentionVLResultsForPregnantCohortDefinition(), mappings)), mappings),
 		    pbfAgeOnlyDisaggregation, Arrays.asList("28", "29", "30", "31", "32", "33", "34", "35", "36", "37"));
 		addRow(
 		    dsd,
-		    "Result >= 1000",
+		    "R>=1000B",
 		    "Results received - breastfeeding",
 		    map(indicator.getIndicator("Results received - breastfeeding",
-		        map(artCohortQueries.getVLResultsForBreastfeedingCohortDefinition(0, 1000000000), mappings)), mappings),
+		        map(artCohortQueries.getRetentionVLResultsForBreastFeedingCohortDefinition(), mappings)), mappings),
 		    pbfAgeOnlyDisaggregation, Arrays.asList("38", "39", "40", "41", "42", "43", "44", "45", "46", "47"));
 		return dsd;
 	}

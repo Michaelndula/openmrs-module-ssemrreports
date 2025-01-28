@@ -517,8 +517,8 @@ public class ArtCohortQueries {
 	public CohortDefinition getVLSampleCollectionCohortDefinition() {
 		SqlCohortDefinition cd = new SqlCohortDefinition();
 		String qry = "SELECT client_id "
-		        + "FROM ssemr_etl.ssemr_flat_encounter_vl_laboratory_request "
-		        + "WHERE location_id=:location AND DATE(date_of_sample_collection) BETWEEN DATE(:startDate) AND DATE(:endDate) ";
+		        + "FROM ssemr_etl.ssemr_flat_encounter_hiv_care_follow_up "
+		        + "WHERE location_id=:location AND DATE(date_vl_sample_collected) BETWEEN DATE_ADD(:startDate, INTERVAL -1 MONTH) AND DATE_ADD(:startDate, INTERVAL 1 DAY) ";
 		
 		cd.setQuery(qry);
 		cd.addParameter(new Parameter("startDate", "Start Date", Date.class));
@@ -530,9 +530,10 @@ public class ArtCohortQueries {
 	
 	public CohortDefinition getVLSampleCollectionForPregnantCohortDefinition() {
 		SqlCohortDefinition cd = new SqlCohortDefinition();
-		String qry = "SELECT client_id " + "FROM ssemr_etl.ssemr_flat_encounter_vl_laboratory_request "
-		        + "WHERE DATE(date_of_sample_collection) BETWEEN DATE(:startDate) AND DATE(:endDate) "
-		        + "AND location_id=:location AND patient_pregnant = 'Yes' ";
+		String qry = "SELECT client_id "
+		        + "FROM ssemr_etl.ssemr_flat_encounter_hiv_care_follow_up "
+		        + "WHERE location_id=:location AND DATE(date_vl_sample_collected) BETWEEN DATE_ADD(:startDate, INTERVAL -1 MONTH) AND DATE_ADD(:startDate, INTERVAL 1 DAY) "
+		        + " AND client_pregnant = 'Yes' ";
 		
 		cd.setQuery(qry);
 		cd.addParameter(new Parameter("startDate", "Start Date", Date.class));
@@ -544,9 +545,10 @@ public class ArtCohortQueries {
 	
 	public CohortDefinition getVLSampleCollectionForBreastfeedingCohortDefinition() {
 		SqlCohortDefinition cd = new SqlCohortDefinition();
-		String qry = "SELECT client_id " + "FROM ssemr_etl.ssemr_flat_encounter_vl_laboratory_request "
-		        + "WHERE DATE(date_of_sample_collection) BETWEEN DATE(:startDate) AND DATE(:endDate) "
-		        + "AND location_id=:location AND patient_breastfeeding = 'Yes' ";
+		String qry = "SELECT client_id "
+		        + " FROM ssemr_etl.ssemr_flat_encounter_hiv_care_follow_up "
+		        + " WHERE location_id=:location AND DATE(date_vl_sample_collected) BETWEEN DATE_ADD(:startDate, INTERVAL -1 MONTH) AND DATE_ADD(:startDate, INTERVAL 1 DAY) "
+		        + " AND client_breastfeeding = 'Yes' ";
 		
 		cd.setQuery(qry);
 		cd.addParameter(new Parameter("startDate", "Start Date", Date.class));
@@ -694,48 +696,136 @@ public class ArtCohortQueries {
 	}
 	
 	// ----- --- viral load results
-	
-	public CohortDefinition getVLResultsCohortDefinition(int minVal, int maxVal) {
+	//Suppression
+	public CohortDefinition getVLResultsCohortDefinition() {
 		SqlCohortDefinition cd = new SqlCohortDefinition();
-		String qry = "SELECT client_id "
-		        + "FROM ssemr_etl.ssemr_flat_encounter_vl_laboratory_request "
-		        + "WHERE DATE(date_results_dispatched) BETWEEN DATE(:startDate) AND DATE(:endDate) AND location_id=:location AND value BETWEEN "
-		        + minVal + " AND " + maxVal;
+		String qry = " SELECT su1.client_id FROM( "
+		        + " SELECT en.client_id,MAX(en.date_vl_results_received) AS date_vl_results_received FROM ssemr_etl.ssemr_flat_encounter_hiv_care_follow_up en "
+		        + " WHERE (en.viral_load_value IS NOT NULL OR en.vl_results IS NOT NULL) AND en.viral_load_test_done='Yes'"
+		        + " AND DATE(en.date_vl_results_received) BETWEEN DATE_ADD(:startDate, INTERVAL -1 MONTH) AND DATE_ADD(:startDate, INTERVAL -1 DAY) "
+		        + " GROUP BY en.client_id)su1 "
+		        
+		        + " INNER JOIN " + " ssemr_etl.ssemr_flat_encounter_hiv_care_follow_up fu2 ON fu2.client_id=su1.client_id "
+		        + " AND su1.date_vl_results_received=fu2.date_vl_results_received"
+		        + " AND (fu2.viral_load_value < 1000 OR fu2.vl_results = 'Below Detectable (BDL)')";
 		
 		cd.setQuery(qry);
 		cd.addParameter(new Parameter("startDate", "Start Date", Date.class));
 		cd.addParameter(new Parameter("endDate", "End Date", Date.class));
 		cd.addParameter(new Parameter("location", "Location", Location.class));
-		cd.setDescription("VL results received during the reporting period");
+		cd.setDescription("Suppression VL results received during the reporting period");
 		return cd;
 	}
 	
-	public CohortDefinition getVLResultsForPregnantCohortDefinition(int minVal, int maxVal) {
+	public CohortDefinition getVLResultsForPregnantCohortDefinition() {
 		SqlCohortDefinition cd = new SqlCohortDefinition();
-		String qry = "SELECT client_id " + "FROM ssemr_etl.ssemr_flat_encounter_vl_laboratory_request "
-		        + "WHERE date(date_results_dispatched) between date(:startDate) and date(:endDate) "
-		        + "AND location_id=:location AND patient_pregnant = 'Yes' AND value BETWEEN " + minVal + " AND " + maxVal;
+		String qry = " SELECT a.client_id FROM("
+		        + " SELECT su1.client_id FROM( "
+		        + " SELECT en.client_id,MAX(en.date_vl_results_received) AS date_vl_results_received FROM ssemr_etl.ssemr_flat_encounter_hiv_care_follow_up en "
+		        + " WHERE (en.viral_load_value IS NOT NULL OR en.vl_results IS NOT NULL) AND en.viral_load_test_done='Yes'"
+		        + " AND DATE(en.date_vl_results_received) BETWEEN DATE_ADD(:startDate, INTERVAL -1 MONTH) AND DATE_ADD(:startDate, INTERVAL -1 DAY) "
+		        + " GROUP BY en.client_id)su1 "
+		        
+		        + " INNER JOIN " + " ssemr_etl.ssemr_flat_encounter_hiv_care_follow_up fu2 ON fu2.client_id=su1.client_id "
+		        + " AND su1.date_vl_results_received=fu2.date_vl_results_received"
+		        + " AND (fu2.viral_load_value < 1000 OR fu2.vl_results = 'Below Detectable (BDL)'))a "
+		        + "INNER JOIN ssemr_etl.ssemr_flat_encounter_hiv_care_follow_up b ON b.client_id=a.client_id"
+		        + " WHERE b.client_pregnant = 'Yes'";
 		
 		cd.setQuery(qry);
 		cd.addParameter(new Parameter("startDate", "Start Date", Date.class));
 		cd.addParameter(new Parameter("endDate", "End Date", Date.class));
 		cd.addParameter(new Parameter("location", "Location", Location.class));
-		cd.setDescription("VL results for the pregnant received during the reporting period");
+		cd.setDescription("Suppression VL results for the pregnant received during the reporting period");
 		return cd;
 	}
 	
-	public CohortDefinition getVLResultsForBreastfeedingCohortDefinition(int minVal, int maxVal) {
+	public CohortDefinition getVLResultsForBreastfeedingCohortDefinition() {
 		SqlCohortDefinition cd = new SqlCohortDefinition();
-		String qry = "SELECT client_id "
-		        + "FROM ssemr_etl.ssemr_flat_encounter_vl_laboratory_request "
-		        + "WHERE location_id=:location AND DATE(date_results_dispatched) BETWEEN DATE(:startDate) AND DATE(:endDate) "
-		        + "AND patient_breastfeeding = 'Yes' AND value BETWEEN " + minVal + " AND " + maxVal;
+		String qry = " SELECT a.client_id FROM("
+		        + " SELECT su1.client_id FROM( "
+		        + " SELECT en.client_id,MAX(en.date_vl_results_received) AS date_vl_results_received FROM ssemr_etl.ssemr_flat_encounter_hiv_care_follow_up en "
+		        + " WHERE (en.viral_load_value IS NOT NULL OR en.vl_results IS NOT NULL) AND en.viral_load_test_done='Yes'"
+		        + " AND DATE(en.date_vl_results_received) BETWEEN DATE_ADD(:startDate, INTERVAL -1 MONTH) AND DATE_ADD(:startDate, INTERVAL -1 DAY) "
+		        + " GROUP BY en.client_id)su1 "
+		        
+		        + " INNER JOIN " + " ssemr_etl.ssemr_flat_encounter_hiv_care_follow_up fu2 ON fu2.client_id=su1.client_id "
+		        + " AND su1.date_vl_results_received=fu2.date_vl_results_received"
+		        + " AND (fu2.viral_load_value < 1000 OR fu2.vl_results = 'Below Detectable (BDL)'))a "
+		        + "INNER JOIN ssemr_etl.ssemr_flat_encounter_hiv_care_follow_up b ON b.client_id=a.client_id"
+		        + " WHERE b.client_breastfeeding = 'Yes'";
 		
 		cd.setQuery(qry);
 		cd.addParameter(new Parameter("startDate", "Start Date", Date.class));
 		cd.addParameter(new Parameter("endDate", "End Date", Date.class));
 		cd.addParameter(new Parameter("location", "Location", Location.class));
-		cd.setDescription("VL results for the breastfeeding received during the reporting period");
+		cd.setDescription("suppression VL results for the breastfeeding received during the reporting period");
+		return cd;
+	}
+	
+	//VL Retention queries
+	public CohortDefinition getVLRetentionResultsCohortDefinition() {
+		SqlCohortDefinition cd = new SqlCohortDefinition();
+		String qry = "SELECT su1.client_id FROM( "
+		        + " SELECT en.client_id,MAX(en.date_vl_results_received) AS date_vl_results_received FROM ssemr_etl.ssemr_flat_encounter_hiv_care_follow_up en "
+		        + " WHERE (en.viral_load_value IS NOT NULL OR en.vl_results IS NOT NULL) AND en.viral_load_test_done='Yes'"
+		        + " AND DATE(en.date_vl_results_received) BETWEEN DATE_ADD(:startDate, INTERVAL -1 MONTH) AND DATE_ADD(:startDate, INTERVAL -1 DAY) "
+		        + " GROUP BY en.client_id)su1 "
+		        
+		        + " INNER JOIN " + " ssemr_etl.ssemr_flat_encounter_hiv_care_follow_up fu2 ON fu2.client_id=su1.client_id "
+		        + " AND su1.date_vl_results_received=fu2.date_vl_results_received" + " AND fu2.viral_load_value >= 1000";
+		
+		cd.setQuery(qry);
+		cd.addParameter(new Parameter("startDate", "Start Date", Date.class));
+		cd.addParameter(new Parameter("endDate", "End Date", Date.class));
+		cd.addParameter(new Parameter("location", "Location", Location.class));
+		cd.setDescription("Retention VL results received during the reporting period");
+		return cd;
+	}
+	
+	public CohortDefinition getRetentionVLResultsForPregnantCohortDefinition() {
+		SqlCohortDefinition cd = new SqlCohortDefinition();
+		String qry = "SELECT a.client_id FROM("
+		        + " SELECT su1.client_id FROM( "
+		        + " SELECT en.client_id,MAX(en.date_vl_results_received) AS date_vl_results_received FROM ssemr_etl.ssemr_flat_encounter_hiv_care_follow_up en "
+		        + " WHERE (en.viral_load_value IS NOT NULL OR en.vl_results IS NOT NULL) AND en.viral_load_test_done='Yes'"
+		        + " AND DATE(en.date_vl_results_received) BETWEEN DATE_ADD(:startDate, INTERVAL -1 MONTH) AND DATE_ADD(:startDate, INTERVAL -1 DAY) "
+		        + " GROUP BY en.client_id)su1 "
+		        
+		        + " INNER JOIN " + " ssemr_etl.ssemr_flat_encounter_hiv_care_follow_up fu2 ON fu2.client_id=su1.client_id "
+		        + " AND su1.date_vl_results_received=fu2.date_vl_results_received" + " AND fu2.viral_load_value >= 1000)a "
+		        
+		        + "INNER JOIN ssemr_etl.ssemr_flat_encounter_hiv_care_follow_up b ON b.client_id=a.client_id"
+		        + " WHERE b.client_pregnant = 'Yes'";
+		
+		cd.setQuery(qry);
+		cd.addParameter(new Parameter("startDate", "Start Date", Date.class));
+		cd.addParameter(new Parameter("endDate", "End Date", Date.class));
+		cd.addParameter(new Parameter("location", "Location", Location.class));
+		cd.setDescription("Retention VL results and pregnant received during the reporting period");
+		return cd;
+	}
+	
+	public CohortDefinition getRetentionVLResultsForBreastFeedingCohortDefinition() {
+		SqlCohortDefinition cd = new SqlCohortDefinition();
+		String qry = "SELECT a.client_id FROM("
+		        + " SELECT su1.client_id FROM( "
+		        + " SELECT en.client_id,MAX(en.date_vl_results_received) AS date_vl_results_received FROM ssemr_etl.ssemr_flat_encounter_hiv_care_follow_up en "
+		        + " WHERE (en.viral_load_value IS NOT NULL OR en.vl_results IS NOT NULL) AND en.viral_load_test_done='Yes'"
+		        + " AND DATE(en.date_vl_results_received) BETWEEN DATE_ADD(:startDate, INTERVAL -1 MONTH) AND DATE_ADD(:startDate, INTERVAL -1 DAY) "
+		        + " GROUP BY en.client_id)su1 "
+		        
+		        + " INNER JOIN " + " ssemr_etl.ssemr_flat_encounter_hiv_care_follow_up fu2 ON fu2.client_id=su1.client_id "
+		        + " AND su1.date_vl_results_received=fu2.date_vl_results_received" + " AND fu2.viral_load_value >= 1000)a "
+		        
+		        + "INNER JOIN ssemr_etl.ssemr_flat_encounter_hiv_care_follow_up b ON b.client_id=a.client_id"
+		        + " WHERE b.client_breastfeeding = 'Yes'";
+		
+		cd.setQuery(qry);
+		cd.addParameter(new Parameter("startDate", "Start Date", Date.class));
+		cd.addParameter(new Parameter("endDate", "End Date", Date.class));
+		cd.addParameter(new Parameter("location", "Location", Location.class));
+		cd.setDescription("Retention VL results and breastfeeding received during the reporting period");
 		return cd;
 	}
 	
@@ -771,8 +861,6 @@ public class ArtCohortQueries {
 		
 		cd.addSearch("currentOnArtAndOnSecondLineRegimen", SsemrReportUtils.map(
 		    getAgeAtStartOfARTonSecondLine(minAge, maxAge, sex),
-		    "startDate=${startDate},endDate=${endDate},location=${location}"));
-		cd.addSearch("onSecondLineRegimen", SsemrReportUtils.map(getPatientsOnSecondLineRegimenCohortDefinition(),
 		    "startDate=${startDate},endDate=${endDate},location=${location}"));
 		cd.setCompositionString("currentOnArtAndOnSecondLineRegimen");
 		return cd;
