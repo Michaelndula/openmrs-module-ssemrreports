@@ -257,7 +257,7 @@ public class ArtCohortQueries {
 		SqlCohortDefinition cd = new SqlCohortDefinition();
 		String qry = "SELECT f.client_id "
 		        + " FROM ssemr_etl.ssemr_flat_encounter_hiv_care_follow_up f "
-		        + " WHERE f.location_id=:location and f.art_regimen IS NOT NULL AND DATE(f.encounter_datetime) <= DATE(:endDate) "
+		        + " WHERE f.location_id=:location and f.art_regimen IS NOT NULL AND DATE(f.encounter_datetime) BETWEEN :startDate AND DATE(:endDate) "
 		        + " GROUP BY f.client_id "
 		        + " HAVING REPLACE(MID(MAX(CONCAT(f.encounter_datetime, f.art_regimen)),20),' ','') = REPLACE(':artRegimen',' ','') ";
 		
@@ -332,7 +332,7 @@ public class ArtCohortQueries {
 		        + " INNER JOIN ssemr_etl.mamba_dim_person p on p.person_id = e.client_id "
 		        + " INNER JOIN ssemr_etl.ssemr_flat_encounter_hiv_care_follow_up f on f.client_id = e.client_id "
 		        + " LEFT JOIN ssemr_etl.ssemr_flat_encounter_end_of_follow_up fup on e.client_id = fup.client_id "
-		        + " WHERE e.location_id=:location AND (fup.date_of_death IS NULL OR fup.date_of_death > DATE(:endDate)) "
+		        + " WHERE e.location_id=:location AND DATE(f.encounter_datetime) BETWEEN :startDate AND :endDate AND (fup.date_of_death IS NULL OR fup.date_of_death > DATE(:endDate)) "
 		        + " AND (fup.ltfu_date is null or fup.ltfu_date NOT BETWEEN DATE(:startDate) AND date(:endDate)) "
 		        + " GROUP BY e.client_id, f.encounter_datetime, p.gender, ageAtArtStart,fup.ltfu_date,f.art_regimen_no_of_days_dispensed, nextDrugApptDate "
 		        + " HAVING DATE_ADD(nextDrugApptDate, INTERVAL 30 DAY) > DATE(:endDate)) a "
@@ -354,7 +354,7 @@ public class ArtCohortQueries {
 		String query = "SELECT b.client_id FROM( "
 		        + " SELECT DISTINCT(client_id)"
 		        + " FROM ( "
-		        + " SELECT f.encounter_datetime, f.client_id, p.gender, timestampdiff(YEAR, p.birthdate, e.art_start_date) ageAtArtStart, fup.ltfu_date, f.art_regimen_no_of_days_dispensed, "
+		        + " SELECT f.encounter_datetime, f.client_id, p.gender, timestampdiff(YEAR, p.birthdate, :endDate) ageAtArtStart, fup.ltfu_date, f.art_regimen_no_of_days_dispensed, "
 		        + " DATE_ADD(f.encounter_datetime, interval (case f.art_regimen_no_of_days_dispensed when '30 Days' then 30 when '60 Days' then 60 when '90 Days' then 90 when '180 Days' then 180 when '180+ Days' then 180 when '150 Days' then 150 else 0 end) DAY) nextDrugApptDate "
 		        + " FROM("
 		        
@@ -374,7 +374,7 @@ public class ArtCohortQueries {
 		        + " INNER JOIN ssemr_etl.mamba_dim_person p on p.person_id = e.client_id "
 		        + " INNER JOIN ssemr_etl.ssemr_flat_encounter_hiv_care_follow_up f on f.client_id = e.client_id "
 		        + " LEFT JOIN ssemr_etl.ssemr_flat_encounter_end_of_follow_up fup on e.client_id = fup.client_id "
-		        + " WHERE e.location_id=:location AND (fup.date_of_death IS NULL OR fup.date_of_death > DATE(:endDate)) "
+		        + " WHERE e.location_id=:location AND DATE(f.encounter_datetime) BETWEEN :startDate AND :endDate AND (fup.date_of_death IS NULL OR fup.date_of_death > DATE(:endDate)) "
 		        + " AND (fup.ltfu_date is null or fup.ltfu_date NOT BETWEEN DATE(:startDate) AND date(:endDate)) "
 		        + " GROUP BY e.client_id, f.encounter_datetime, p.gender, ageAtArtStart,fup.ltfu_date,f.art_regimen_no_of_days_dispensed, nextDrugApptDate "
 		        + " HAVING DATE_ADD(nextDrugApptDate, INTERVAL 30 DAY) > DATE(:endDate)) a "
@@ -424,7 +424,7 @@ public class ArtCohortQueries {
 		        + " INNER JOIN ssemr_etl.mamba_dim_person p on p.person_id = e.client_id "
 		        + " INNER JOIN ssemr_etl.ssemr_flat_encounter_hiv_care_follow_up f on f.client_id = e.client_id "
 		        + " LEFT JOIN ssemr_etl.ssemr_flat_encounter_end_of_follow_up fup on e.client_id = fup.client_id "
-		        + " WHERE e.location_id=:location AND (fup.date_of_death IS NULL OR fup.date_of_death > DATE(:endDate)) "
+		        + " WHERE e.location_id=:location AND DATE(f.encounter_datetime) BETWEEN :startDate AND :endDate AND (fup.date_of_death IS NULL OR fup.date_of_death > DATE(:endDate)) "
 		        + " AND (fup.ltfu_date is null or fup.ltfu_date NOT BETWEEN DATE(:startDate) AND date(:endDate)) "
 		        + " GROUP BY e.client_id, f.encounter_datetime, p.gender, ageAtArtStart,fup.ltfu_date,f.art_regimen_no_of_days_dispensed, nextDrugApptDate "
 		        + " HAVING DATE_ADD(nextDrugApptDate, INTERVAL 30 DAY) > DATE(:endDate)) a "
