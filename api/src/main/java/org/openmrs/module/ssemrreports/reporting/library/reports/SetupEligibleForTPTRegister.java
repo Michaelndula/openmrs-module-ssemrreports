@@ -76,7 +76,7 @@ public class SetupEligibleForTPTRegister extends SsemrDataExportManager {
 		ReportDesign reportDesign = null;
 		try {
 			reportDesign = createXlsReportDesign(reportDefinition, "eligibleTPTRegister.xls",
-			    "Report for clients eligible for TPT", getExcelDesignUuid(), null);
+			    "Line list for clients eligible, started and completed TPT", getExcelDesignUuid(), null);
 			Properties props = new Properties();
 			props.put("repeatingSections", "sheet:1,row:4,dataset:ETPT");
 			props.put("sortWeight", "5000");
