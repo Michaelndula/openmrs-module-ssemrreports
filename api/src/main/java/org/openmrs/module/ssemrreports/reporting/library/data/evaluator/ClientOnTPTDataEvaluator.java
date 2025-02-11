@@ -36,8 +36,11 @@ public class ClientOnTPTDataEvaluator implements PersonDataEvaluator {
 	        throws EvaluationException {
 		EvaluatedPersonData c = new EvaluatedPersonData(definition, context);
 		
-		String qry = "select client_id, case max(tb_status) when 'No Signs' then 'Yes' else 'No' end  as tpt_status from "
-		        + " ssemr_etl.ssemr_flat_encounter_hiv_care_follow_up where date(encounter_datetime) <= date(:endDate) group by client_id";
+		String qry = "SELECT client_id, " + "       COALESCE(CASE WHEN MAX(tpt_dispensed) = 'Yes' THEN 'Yes' "
+		        + "                     WHEN MAX(tpt_dispensed) = 'No' THEN 'No' "
+		        + "                     ELSE 'N/A' END, 'N/A') AS tpt_status "
+		        + "FROM ssemr_etl.ssemr_flat_encounter_hiv_care_follow_up "
+		        + "WHERE DATE(encounter_datetime) <= DATE(:endDate) " + "GROUP BY client_id";
 		
 		SqlQueryBuilder queryBuilder = new SqlQueryBuilder();
 		queryBuilder.append(qry);

@@ -266,11 +266,13 @@ public class CommonQueries {
 	}
 	
 	public static String getPatientsWithHighVL() {
-		String query = "select s.client_id from (SELECT f.client_id, p.person_name_short, f.encounter_datetime, f.viral_load_value, f.vl_results, f.art_regimen "
-		        + "FROM ssemr_etl.ssemr_flat_encounter_hiv_care_follow_up f LEFT JOIN ssemr_etl.mamba_dim_person p ON p.person_id = f.client_id "
-		        + "WHERE f.encounter_datetime = (SELECT MAX(f2.encounter_datetime) FROM ssemr_etl.ssemr_flat_encounter_hiv_care_follow_up f2 "
-		        + "WHERE f2.client_id = f.client_id AND DATE(f2.encounter_datetime) BETWEEN :startDate AND :endDate AND f2.location_id = :location) "
-		        + " AND f.viral_load_value IS NOT NULL AND f.viral_load_value >= 1000 AND f.location_id = :location ORDER BY f.client_id ASC) as s;";
+		String query = "SELECT DISTINCT f.client_id " + "FROM ssemr_etl.ssemr_flat_encounter_hiv_care_follow_up f "
+		        + "LEFT JOIN ssemr_etl.mamba_dim_person p ON p.person_id = f.client_id "
+		        + "LEFT JOIN ssemr_etl.ssemr_flat_encounter_high_viral_load hv ON hv.client_id = f.client_id " + "WHERE ("
+		        + "    (f.viral_load_value IS NOT NULL AND f.viral_load_value >= 1000) "
+		        + "    OR (hv.adherence_date IS NOT NULL) " + "    OR (hv.second_eac_session_date IS NOT NULL) "
+		        + "    OR (hv.third_eac_session_date IS NOT NULL) " + "    OR (hv.repeat_vl_result IS NOT NULL) " + ") "
+		        + "AND DATE(f.encounter_datetime) BETWEEN :startDate AND :endDate " + "ORDER BY f.client_id ASC;";
 		
 		return query;
 	}
