@@ -155,6 +155,9 @@ public class AllClientsDatasetDefinition extends SsemrBaseDataSet {
 		ClinicalStatusDataDefinition clinicalStatusDataDefinition = new ClinicalStatusDataDefinition();
 		clinicalStatusDataDefinition.addParameter(new Parameter("endDate", "End Date", Date.class));
 		
+		RecurrenceOfIITDataDefinition recurrenceOfIITDataDefinition = new RecurrenceOfIITDataDefinition();
+		recurrenceOfIITDataDefinition.addParameter(new Parameter("endDate", "End Date", Date.class));
+		
 		dsd.addColumn("id", new IndexDataDefinition(), "");
 		dsd.addColumn("Identifier", identifierDef, (String) null);
 		dsd.addColumn("Name", nameDef, "");
@@ -182,6 +185,7 @@ public class AllClientsDatasetDefinition extends SsemrBaseDataSet {
 		dsd.addColumn("Date reached 28 days after missed appointment", reached28DaysAfterIITDateDataDefinition,
 		    "endDate=${endDate}");
 		dsd.addColumn("Date returned to treatment", returnToTreatmentDateDataDefinition, "endDate=${endDate}");
+		dsd.addColumn("Recurrence of IIT", recurrenceOfIITDataDefinition, "endDate=${endDate}");
 		dsd.addColumn("Last VL sample collection Date", dateVLSampleCollectedDataDefinition, "endDate=${endDate}");
 		dsd.addColumn("Date VL result received", dateVLSampleReceivedDataDefinition, "endDate=${endDate}");
 		dsd.addColumn("Date Repeat Viral Load sample collected", repeatVLSampleDateDataDefinition, "endDate=${endDate}");
